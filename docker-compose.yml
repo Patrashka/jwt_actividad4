@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  # Base de Datos MariaDB
+  mariadb:
+    image: mariadb:10.11
+    container_name: jwt-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: jwt_auth_db
+      MYSQL_USER: jwtuser
+      MYSQL_PASSWORD: jwtpassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - jwt-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: jwt-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - jwt-network
+
+  # Backend Flask
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: jwt-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: jwt_auth_db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      FLASK_ENV: development
+      FLASK_DEBUG: "True"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - jwt-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Cliente JavaFX (opcional - para desarrollo)
+  # Nota: JavaFX requiere GUI, este contenedor es principalmente para compilación
+  javafx-client:
+    build:
+      context: .
+      dockerfile: Dockerfile.javafx
+    container_name: jwt-javafx-client
+    environment:
+      DISPLAY: ${DISPLAY:-:0}
+    depends_on:
+      - backend
+    networks:
+      - jwt-network
+    # Descomentar si necesitas ejecutar la GUI (requiere X11 forwarding)
+    # volumes:
+    #   - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    profiles:
+      - dev
+
+volumes:
+  mariadb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  jwt-network:
+    driver: bridge
+

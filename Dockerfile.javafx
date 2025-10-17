@@ -1,0 +1,29 @@
+# Dockerfile para Cliente JavaFX
+FROM eclipse-temurin:21-jdk
+
+# Instalar Maven
+RUN apt-get update && apt-get install -y \
+    maven \
+    libgtk-3-0 \
+    libxtst6 \
+    libxxf86vm1 \
+    libgl1-mesa-glx \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copiar pom.xml primero para aprovechar cache de Docker
+COPY pom.xml .
+
+# Descargar dependencias (esto se cachea)
+RUN mvn dependency:resolve
+
+# Copiar código fuente
+COPY src ./src
+
+# Compilar el proyecto
+RUN mvn clean compile
+
+# Comando por defecto
+CMD ["mvn", "javafx:run"]
+

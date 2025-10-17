@@ -1,0 +1,221 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║         JWT AUTH SYSTEM - ACTIVIDAD 4                                   ║
+║         Cliente JavaFX Desktop + Backend Flask                          ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+🐳 INICIO RÁPIDO CON DOCKER (RECOMENDADO - 1 COMANDO)
+══════════════════════════════════════════════════════════════════════════
+
+   Ejecutar: docker-start.bat
+
+   ¡Eso es todo! Docker instalará y ejecutará:
+   - MariaDB
+   - Redis  
+   - Backend Flask
+
+   Accede a: http://localhost:5000/api/health
+
+╔══════════════════════════════════════════════════════════════════════════╗
+║  Con Docker NO necesitas instalar Python, MariaDB, Redis, ni nada más  ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+
+📌 INICIO SIN DOCKER (Manual - 3 PASOS)
+══════════════════════════════════════════════════════════════════════════
+
+1️⃣  Configuración Inicial (Solo primera vez)
+   └─ Ejecutar: setup.bat
+
+2️⃣  Configurar Base de Datos
+   └─ Editar archivo .env con tus credenciales
+
+3️⃣  Ejecutar Aplicación
+   └─ Ejecutar: run_all.bat
+
+
+📚 DOCUMENTACIÓN DISPONIBLE
+══════════════════════════════════════════════════════════════════════════
+
+📄 DOCKER_SETUP.md              - 🐳 Guía completa de Docker (NUEVO)
+📄 README.md                    - Documentación completa del proyecto
+📄 GUIA_RAPIDA.md               - Guía de inicio rápido
+📄 INSTRUCCIONES_EJECUCION.md   - Instrucciones detalladas paso a paso
+📄 INDICE_PROYECTO.md           - Índice y navegación del proyecto
+
+
+🐳 COMANDOS DOCKER
+══════════════════════════════════════════════════════════════════════════
+
+docker-start.bat         - 🚀 Iniciar todo con Docker
+docker-stop.bat          - 🛑 Detener servicios
+docker-logs.bat          - 📋 Ver logs en tiempo real
+
+# O usando docker-compose directamente:
+docker-compose up -d              - Iniciar servicios
+docker-compose down               - Detener servicios
+docker-compose logs -f backend    - Ver logs
+docker-compose ps                 - Ver estado
+
+
+🎯 CARACTERÍSTICAS PRINCIPALES
+══════════════════════════════════════════════════════════════════════════
+
+✅ Health Check              - Verificar estado del servidor
+✅ Autenticación JWT          - Login con SQL o Redis
+✅ Gestión de Tokens          - Access token y Refresh token
+✅ Ver Perfil                 - Información del usuario
+✅ Comparación Visual         - SQL vs Redis con métricas
+✅ Registro de Usuario        - Crear nuevos usuarios
+✅ Logs en Tiempo Real        - Actividad detallada
+
+
+🛠️ TECNOLOGÍAS
+══════════════════════════════════════════════════════════════════════════
+
+Backend:
+  🐍 Python 3.11
+  🌶️  Flask
+  🔐 Flask-JWT-Extended
+  🗄️  MariaDB 10.11
+  🔴 Redis 7
+
+Frontend:
+  ☕ Java 21
+  🎨 JavaFX 21
+  📦 Maven
+  🔄 Jackson
+  🌐 Java HTTP Client
+
+Docker:
+  🐳 Docker Compose
+  📦 4 servicios orquestados
+  🔄 Auto-configuración
+
+
+📋 REQUISITOS
+══════════════════════════════════════════════════════════════════════════
+
+CON DOCKER (Recomendado):
+  ✓ Docker Desktop (incluye docker-compose)
+  ✓ Puertos libres: 5000, 3306, 6379
+
+SIN DOCKER (Manual):
+  ✓ Python 3.8 o superior
+  ✓ Java 21 (para cliente JavaFX)
+  ✓ Maven 3.8 o superior
+  ✓ MariaDB/MySQL Server
+  ✓ Redis (opcional)
+
+
+🎮 PROBAR LA API
+══════════════════════════════════════════════════════════════════════════
+
+# 1. Health Check
+curl http://localhost:5000/api/health
+
+# 2. Registrar usuario
+curl -X POST http://localhost:5000/api/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","email":"test@example.com","password":"password123"}'
+
+# 3. Login
+curl -X POST http://localhost:5000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","password":"password123"}'
+
+# 4. Comparar SQL vs Redis
+curl -X POST http://localhost:5000/api/performance/compare \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","password":"password123"}'
+
+
+🚀 SCRIPTS DISPONIBLES (Sin Docker)
+══════════════════════════════════════════════════════════════════════════
+
+setup.bat           - Configuración inicial del proyecto
+run_all.bat         - Ejecutar backend + cliente
+run_javafx.bat      - Ejecutar solo cliente JavaFX
+start_windows.bat   - Ejecutar solo backend Flask
+
+
+🔗 ENDPOINTS PRINCIPALES
+══════════════════════════════════════════════════════════════════════════
+
+GET  /api/health                    - Health check
+POST /api/register                  - Registrar usuario
+POST /api/login                     - Login con SQL
+POST /api-redis/login               - Login con Redis
+POST /api/refresh                   - Refresh token
+POST /api/logout                    - Logout
+GET  /api/profile                   - Ver perfil
+POST /api/performance/compare       - Comparar SQL vs Redis
+
+
+📊 SERVICIOS DOCKER
+══════════════════════════════════════════════════════════════════════════
+
+Servicio   | Puerto | Credenciales
+-----------|--------|------------------------------------------
+Backend    | 5000   | http://localhost:5000
+MariaDB    | 3306   | root / rootpassword
+Redis      | 6379   | Sin password
+JavaFX     | -      | Cliente GUI (opcional)
+
+
+⚠️ SOLUCIÓN RÁPIDA DE PROBLEMAS
+══════════════════════════════════════════════════════════════════════════
+
+❌ Docker no inicia
+   → Verificar: docker --version
+   → Instalar: https://www.docker.com/products/docker-desktop
+
+❌ Puerto ocupado
+   → Verificar: netstat -ano | findstr :5000
+   → Cambiar puerto en docker-compose.yml
+
+❌ Servicio no responde
+   → Ver logs: docker-compose logs backend
+   → Reiniciar: docker-compose restart backend
+
+❌ Base de datos no conecta
+   → Esperar 10 segundos después de iniciar
+   → Verificar: docker-compose ps
+
+
+💡 VENTAJAS DE DOCKER
+══════════════════════════════════════════════════════════════════════════
+
+✅ No necesitas instalar Python, MariaDB, Redis
+✅ Mismo entorno en cualquier máquina
+✅ Fácil de limpiar (docker-compose down -v)
+✅ Aislado de tu sistema
+✅ Configuración automática de base de datos
+✅ Todos los servicios conectados automáticamente
+
+
+📞 AYUDA
+══════════════════════════════════════════════════════════════════════════
+
+1. Consulta DOCKER_SETUP.md - Guía completa de Docker
+2. Consulta README.md - Documentación completa
+3. Consulta INSTRUCCIONES_EJECUCION.md - Troubleshooting
+4. Ver logs: docker-compose logs -f backend
+
+
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║  🐳 OPCIÓN RECOMENDADA: Docker                                          ║
+║                                                                          ║
+║  1. Instala Docker Desktop                                              ║
+║  2. Ejecuta: docker-start.bat                                           ║
+║  3. Accede a: http://localhost:5000/api/health                          ║
+║                                                                          ║
+║  ¡Listo en minutos! 🚀                                                  ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+
+Desarrollado con ❤️ para Actividad 4 - Integración de Aplicaciones
+Java 21 + JavaFX + Flask + JWT + SQL + Redis + Docker

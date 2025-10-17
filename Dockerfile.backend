@@ -1,0 +1,41 @@
+# Dockerfile para Backend Flask
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    gcc \
+    default-libmysqlclient-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar requirements y instalar dependencias Python
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar código de la aplicación
+COPY app.py .
+COPY config.py .
+COPY database.py .
+COPY models.py .
+COPY redis_manager.py .
+COPY redis_alternative.py .
+
+# Variables de entorno por defecto
+ENV DB_HOST=mariadb
+ENV DB_PORT=3306
+ENV DB_USER=root
+ENV DB_PASSWORD=rootpassword
+ENV DB_NAME=jwt_auth_db
+ENV REDIS_HOST=redis
+ENV REDIS_PORT=6379
+ENV FLASK_ENV=development
+ENV FLASK_DEBUG=True
+
+# Exponer puerto
+EXPOSE 5000
+
+# Comando de inicio
+CMD ["python", "app.py"]
+

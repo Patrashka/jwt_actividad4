@@ -1,0 +1,78 @@
+# Docker Compose para Producción (Sin JavaFX GUI)
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: jwt-mariadb-prod
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-change_this_password}
+      MYSQL_DATABASE: jwt_auth_db
+      MYSQL_USER: jwtuser
+      MYSQL_PASSWORD: ${DB_USER_PASSWORD:-change_this_too}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data_prod:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - jwt-network-prod
+
+  redis:
+    image: redis:7-alpine
+    container_name: jwt-redis-prod
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redis_password}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_prod:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - jwt-network-prod
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: jwt-backend-prod
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-change_this_password}
+      DB_NAME: jwt_auth_db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-this-secret-key-in-production}
+      FLASK_ENV: production
+      FLASK_DEBUG: "False"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - jwt-network-prod
+
+volumes:
+  mariadb_data_prod:
+  redis_data_prod:
+
+networks:
+  jwt-network-prod:
+    driver: bridge
+

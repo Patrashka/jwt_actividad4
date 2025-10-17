@@ -1,0 +1,199 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║         🐳 PROYECTO LEVANTADO CON DOCKER - EXITOSO                      ║
+║         JWT Auth System - Actividad 4                                   ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+✅ ESTADO DE LOS SERVICIOS
+══════════════════════════════════════════════════════════════════════════
+
+✓ Backend Flask    → CORRIENDO (puerto 5000)
+✓ MariaDB          → CORRIENDO (puerto 3307) 
+✓ Redis            → CORRIENDO (puerto 6379)
+
+Todos los servicios están "healthy" y funcionando correctamente!
+
+
+🌐 ACCESO A LOS SERVICIOS
+══════════════════════════════════════════════════════════════════════════
+
+Backend API:
+   http://localhost:5000
+
+Health Check:
+   http://localhost:5000/api/health
+
+MariaDB:
+   Host: localhost
+   Puerto: 3307 (modificado para evitar conflicto)
+   Usuario: root
+   Password: rootpassword
+   Base de Datos: jwt_auth_db
+
+Redis:
+   Host: localhost
+   Puerto: 6379
+   Sin password
+
+
+📋 PRUEBA RÁPIDA DE LA API
+══════════════════════════════════════════════════════════════════════════
+
+# 1. Health Check
+curl http://localhost:5000/api/health
+
+# 2. Registrar usuario
+curl -X POST http://localhost:5000/api/register `
+  -H "Content-Type: application/json" `
+  -d '{\"username\":\"testuser\",\"email\":\"test@example.com\",\"password\":\"password123\"}'
+
+# 3. Login (SQL)
+curl -X POST http://localhost:5000/api/login `
+  -H "Content-Type: application/json" `
+  -d '{\"username\":\"testuser\",\"password\":\"password123\"}'
+
+# 4. Login (Redis)
+curl -X POST http://localhost:5000/api-redis/login `
+  -H "Content-Type: application/json" `
+  -d '{\"username\":\"testuser\",\"password\":\"password123\"}'
+
+# 5. Comparar SQL vs Redis
+curl -X POST http://localhost:5000/api/performance/compare `
+  -H "Content-Type: application/json" `
+  -d '{\"username\":\"testuser\",\"password\":\"password123\"}'
+
+
+🎮 COMANDOS DOCKER
+══════════════════════════════════════════════════════════════════════════
+
+Ver estado de servicios:
+   docker compose ps
+
+Ver logs del backend:
+   docker compose logs -f backend
+
+Ver logs de MariaDB:
+   docker compose logs -f mariadb
+
+Ver logs de Redis:
+   docker compose logs -f redis
+
+Reiniciar un servicio:
+   docker compose restart backend
+
+Detener todos los servicios:
+   docker compose down
+
+Detener y ELIMINAR datos (CUIDADO):
+   docker compose down -v
+
+
+🔧 ACCESO A LOS CONTENEDORES
+══════════════════════════════════════════════════════════════════════════
+
+Entrar al contenedor del backend:
+   docker exec -it jwt-backend bash
+
+Conectar a MariaDB:
+   docker exec -it jwt-mariadb mysql -u root -prootpassword jwt_auth_db
+   
+   # Dentro de MySQL:
+   SHOW TABLES;
+   SELECT * FROM users;
+   SELECT * FROM token_audit;
+   exit;
+
+Conectar a Redis:
+   docker exec -it jwt-redis redis-cli
+   
+   # Dentro de Redis:
+   PING
+   KEYS *
+   exit
+
+
+📊 INFORMACIÓN DEL SISTEMA
+══════════════════════════════════════════════════════════════════════════
+
+Red Docker:
+   jwt_act4_jwt-network
+
+Volúmenes (datos persistentes):
+   jwt_act4_mariadb_data    → Datos de MariaDB
+   jwt_act4_redis_data      → Datos de Redis
+
+Imágenes Docker utilizadas:
+   - Python 3.11 (backend)
+   - MariaDB 10.11
+   - Redis 7 Alpine
+
+
+✨ VENTAJAS DE USAR DOCKER
+══════════════════════════════════════════════════════════════════════════
+
+✅ NO necesitas instalar Python, MariaDB ni Redis en tu máquina
+✅ Configuración automática de base de datos y tablas
+✅ Todos los servicios conectados automáticamente
+✅ Entorno aislado que no afecta tu sistema
+✅ Fácil de limpiar (docker compose down -v)
+✅ Mismo entorno en cualquier máquina
+
+
+🎯 PRÓXIMOS PASOS
+══════════════════════════════════════════════════════════════════════════
+
+1. PROBAR LA API:
+   - Abre Postman o usa curl
+   - Prueba los endpoints listados arriba
+   - El backend está 100% funcional
+
+2. CLIENTE JAVAFX (Opcional):
+   - Requiere Java 21 y Maven instalados localmente
+   - O compila dentro del contenedor Docker
+   - Ver: DOCKER_SETUP.md para más detalles
+
+3. MONITOREAR:
+   - Usa: docker compose logs -f backend
+   - Observa las peticiones en tiempo real
+
+
+📝 ARCHIVOS IMPORTANTES
+══════════════════════════════════════════════════════════════════════════
+
+docker-compose.yml       - Configuración de servicios
+Dockerfile.backend       - Imagen del backend Flask
+DOCKER_SETUP.md          - Guía completa de Docker
+docker-start.bat         - Script para iniciar fácilmente
+docker-stop.bat          - Script para detener servicios
+docker-logs.bat          - Script para ver logs
+
+
+⚠️ NOTA IMPORTANTE
+══════════════════════════════════════════════════════════════════════════
+
+Puerto de MariaDB cambiado a 3307 (en lugar de 3306) para evitar
+conflicto con MariaDB/MySQL local.
+
+Si necesitas conectar desde fuera de Docker, usa:
+   Host: localhost
+   Puerto: 3307
+
+
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║  🎉 ¡TODO ESTÁ FUNCIONANDO!                                             ║
+║                                                                          ║
+║  Backend API:  http://localhost:5000                                    ║
+║  Health Check: http://localhost:5000/api/health                         ║
+║                                                                          ║
+║  Status: ✅ database: connected                                         ║
+║          ✅ redis: connected                                            ║
+║          ✅ status: healthy                                             ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+
+Desarrollado con ❤️ usando Docker 🐳
+Java 21 + JavaFX + Flask + JWT + MariaDB + Redis
+
